@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="LAMPAS 특목·자사고 면접 연습 도우미" />
+    <title>LAMPAS | 면접 연습실</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="LAMPAS 홈">
+        <span class="torch" aria-hidden="true">♨</span><span>LAMPAS</span>
+      </a>
+      <nav aria-label="주 메뉴"><a href="#how">이용 방법</a><a href="#practice">연습 시작</a></nav>
+      <button class="teacher-button" id="teacherButton">선생님 보기</button>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">LAMPAS INTERVIEW LAB</p>
+          <h1>답을 외우는 연습보다,<br /><em>나를 잘 보여주는</em> 연습.</h1>
+          <p class="hero-text">자기소개서를 바탕으로 질문을 받고, 천천히 내 말로 답해 보세요.<br />LAMPAS AI 조교가 다음 답을 더 선명하게 만드는 힌트를 드릴게요.</p>
+          <a class="primary-button" href="#practice">면접 연습 시작하기 <span>→</span></a>
+          <p class="microcopy">자기소개서에 이름·연락처·주소 등 개인정보는 넣지 마세요.</p>
+        </div>
+        <div class="hero-card" aria-label="오늘의 연습 안내">
+          <div class="flame-mark">✦</div>
+          <p class="card-label">TODAY'S PRACTICE</p>
+          <h2>말할수록<br />답은 또렷해져요.</h2>
+          <div class="progress-line"><span></span></div>
+          <p class="small">나만의 경험을, 나만의 언어로.</p>
+        </div>
+      </section>
+
+      <section class="trust-strip">
+        <span>01 학교별 질문 방향</span><span>02 텍스트·음성 답변</span><span>03 부담 없는 개선 피드백</span>
+      </section>
+
+      <section class="practice-section" id="practice">
+        <div class="section-intro">
+          <p class="eyebrow">PRACTICE ROOM</p>
+          <h2>오늘은 어떤 면접을<br />연습해 볼까요?</h2>
+          <p>아래 내용을 입력하면 연습용 질문이 시작됩니다. 현재는 개인 개발자가 운영하는 소규모 베타이며, 기록은 이 기기에만 저장됩니다.</p>
+        </div>
+
+        <div class="setup-card" id="setupCard">
+          <div class="identity-row">
+            <div class="field-group"><label for="studentAlias">학생 별명</label><input id="studentAlias" maxlength="20" autocomplete="off" placeholder="예: 별빛" /></div>
+            <div class="field-group"><label for="studentCode">학생 번호</label><input id="studentCode" maxlength="20" autocomplete="off" placeholder="예: L-102" /></div>
+          </div>
+          <div class="field-group">
+            <label for="school">지원 학교</label>
+            <select id="school">
+              <option value="외대부고">외대부고</option>
+              <option value="동탄국제고">동탄국제고</option>
+              <option value="수원외고">수원외고</option>
+              <option value="경기외고">경기외고</option>
+            </select>
+          </div>
+          <fieldset class="field-group">
+            <legend>연습 주제</legend>
+            <div class="topic-grid" id="topicGrid">
+              <button class="topic active" data-topic="자기소개서">자기소개서 기반</button>
+              <button class="topic" data-topic="지원 동기">지원 동기</button>
+              <button class="topic" data-topic="학업 역량">학업 역량</button>
+              <button class="topic" data-topic="인성·협업">인성·협업</button>
+              <button class="topic" data-topic="꼬리 질문">꼬리 질문</button>
+            </div>
+          </fieldset>
+          <div class="field-group">
+            <label for="intro">자기소개서 또는 기억하고 싶은 경험</label>
+            <textarea id="intro" maxlength="2500" placeholder="예: 중학교 2학년 때 과학 동아리에서 ...&#10;&#10;실명, 전화번호, 주소, 학교 계정 정보는 적지 마세요."></textarea>
+            <div class="field-bottom"><span>이름 등 개인정보는 빼고 입력해 주세요.</span><span id="introCount">0 / 2500</span></div>
+          </div>
+          <label class="consent"><input id="consent" type="checkbox" /> <span>입력한 답변이 면접 지도 목적으로 최대 6개월간 저장되고, 담당 선생님이 원문을 확인할 수 있다는 안내를 이해했습니다. 현재 데모에서는 이 기기에만 저장됩니다.</span></label>
+          <button class="primary-button wide" id="startButton">첫 질문 받기 <span>→</span></button>
+        </div>
+
+        <section class="interview-room hidden" id="interviewRoom" aria-live="polite">
+          <div class="room-top"><span id="schoolBadge">외대부고</span><span id="topicBadge">자기소개서 기반</span><button id="resetButton" class="text-button">처음부터</button></div>
+          <p class="question-label">LAMPAS AI 조교의 질문</p>
+          <h2 id="questionText"></h2>
+          <p class="question-note">정답을 찾기보다, 실제 경험과 생각을 구체적으로 들려주세요.</p>
+          <div class="timer"><span aria-hidden="true">◷</span> <strong id="timer">00:00</strong><span>답변 시간</span></div>
+          <div class="answer-area">
+            <div class="answer-head"><label for="answer">내 답변</label><button class="voice-button" id="voiceButton" type="button">● 음성으로 말하기</button></div>
+            <textarea id="answer" maxlength="1800" placeholder="질문에 대한 내 답을 편하게 적어 보세요."></textarea>
+            <div class="answer-foot"><span id="voiceStatus">텍스트로 바로 답해도 괜찮아요.</span><span id="answerCount">0 / 1800</span></div>
+          </div>
+          <button class="primary-button wide" id="feedbackButton">피드백 받기 <span>→</span></button>
+        </section>
+
+        <section class="feedback hidden" id="feedback">
+          <p class="eyebrow">GENTLE FEEDBACK</p>
+          <h2>지금 답변에서<br /><em>빛나는 부분</em>부터 볼게요.</h2>
+          <div class="feedback-grid">
+            <article><span class="feedback-icon good">✦</span><h3>잘한 점</h3><p id="strengthText"></p></article>
+            <article><span class="feedback-icon improve">↗</span><h3>보완하면 좋은 점</h3><p id="improveText"></p></article>
+            <article><span class="feedback-icon tip">○</span><h3>이렇게 이어가 보세요</h3><p id="tipText"></p></article>
+          </div>
+          <div class="followup"><span>꼬리 질문</span><p id="followupText"></p></div>
+          <div class="button-row"><button class="secondary-button" id="retryButton">같은 질문 다시 답하기</button><button class="primary-button" id="nextButton">다음 질문 <span>→</span></button></div>
+        </section>
+      </section>
+
+      <section class="how-section" id="how">
+        <p class="eyebrow">HOW IT WORKS</p><h2>혼자여도, 차근차근.</h2>
+        <div class="steps"><article><b>01</b><h3>나의 이야기 입력</h3><p>자기소개서나 기억하고 싶은 경험을 간단히 적어요.</p></article><article><b>02</b><h3>질문에 답하기</h3><p>글로 쓰거나, 음성으로 말하며 답변을 다듬어요.</p></article><article><b>03</b><h3>힌트 받고 다시 말하기</h3><p>조교의 피드백을 바탕으로 나만의 답을 완성해요.</p></article></div>
+      </section>
+    </main>
+
+    <dialog id="teacherDialog">
+      <button class="dialog-close" id="dialogClose" aria-label="닫기">×</button>
+      <p class="eyebrow">TEACHER VIEW · DEMO</p><h2>교사용 화면은<br />다음 단계에서 연결합니다.</h2>
+      <p>현재 버전은 개인 개발 베타로, 개인정보 보호를 위해 이 브라우저에만 연습 기록을 저장합니다. 학원 전체 기록을 선생님이 확인하려면 로그인, 학생·교사 권한, 동의 절차를 포함한 안전한 서버 연결이 필요합니다.</p>
+      <div class="demo-record" id="demoRecord">아직 이 기기에 저장된 연습 기록이 없습니다.</div>
+      <button class="secondary-button" id="clearRecords">이 기기의 연습 기록 지우기</button>
+    </dialog>
+    <footer><span class="brand footer-brand"><span class="torch">♨</span>LAMPAS</span><span>나를 발견하는 면접 연습</span></footer>
+    <script src="app.js"></script>
+  </body>
+</html>
