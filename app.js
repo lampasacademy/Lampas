@@ -40,7 +40,30 @@ function countText(input, display) { $(display).textContent = `${input.value.len
 function formatTime(value) { return `${String(Math.floor(value / 60)).padStart(2,"0")}:${String(value % 60).padStart(2,"0")}`; }
 function startTimer() { clearInterval(timerId); seconds = 0; $("#timer").textContent = formatTime(seconds); timerId = setInterval(() => { seconds += 1; $("#timer").textContent = formatTime(seconds); }, 1000); }
 function randomQuestion() { const school = $("#school").value; const list = questionBank[school][selectedTopic]; return list[Math.floor(Math.random() * list.length)]; }
-function showQuestion() { currentQuestion = randomQuestion(); $("#questionText").textContent = currentQuestion; $("#schoolBadge").textContent = $("#school").value; $("#topicBadge").textContent = selectedTopic; $("#answer").value = ""; countText($("#answer"), "#answerCount"); $("#feedback").classList.add("hidden"); $("#interviewRoom").classList.remove("hidden"); $("#interviewRoom").scrollIntoView({behavior:"smooth", block:"start"}); startTimer(); }
+async function requestAi(action, answer = "") {
+  const response = await fetch("/api/interview", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, school: $("#school").value, topic: selectedTopic, introduction: $("#intro").value, answer, question: currentQuestion })
+  });
+  if (!response.ok) throw new Error("AI unavailable");
+  return (await response.json()).result;
+}
+async function showQuestion() {
+  currentQuestion = randomQuestion();
+  $("#questionText").textContent = "LAMPAS AI 조교가 자기소개서를 읽고 질문을 준비하고 있어요…";
+  $("#schoolBadge").textContent = $("#school").value; $("#topicBadge").textContent = selectedTopic;
+  $("#answer").value = ""; countText($("#answer"), "#answerCount"); $("#feedback").classList.add("hidden"); $("#interviewRoom").classList.remove("hidden"); $("#interviewRoom").scrollIntoView({behavior:"smooth", block:"start"}); startTimer();
+  try {
+    const result = await requestAi("question");
+    currentQuestion = result.question;
+    $("#questionText").textContent = result.question;
+    $(".question-note").textContent = result.question_tip;
+  } catch (_) {
+    $("#questionText").textContent = currentQuestion;
+    $(".question-note").textContent = "현재는 데모 질문을 보여드려요. AI 연결 후에는 자기소개서 내용을 반영한 질문이 나옵니다.";
+  }
+}
 function getFeedback(answer) {
   const length = answer.replace(/\s/g, "").length;
   const hasExample = /(때|하면서|경험|활동|과정|상황|친구|팀)/.test(answer);
@@ -58,7 +81,7 @@ $("#intro").addEventListener("input", e => countText(e.target,"#introCount"));
 $("#answer").addEventListener("input", e => countText(e.target,"#answerCount"));
 $("#topicGrid").addEventListener("click", e => { if (!e.target.matches(".topic")) return; document.querySelectorAll(".topic").forEach(b=>b.classList.remove("active")); e.target.classList.add("active"); selectedTopic=e.target.dataset.topic; });
 $("#startButton").addEventListener("click", () => { if (!$("#studentAlias").value.trim() || !$("#studentCode").value.trim()) { alert("별명과 학원에서 안내받은 학생 번호를 입력해 주세요."); return; } if (!$("#consent").checked) { alert("연습 기록 안내를 확인한 뒤 시작해 주세요."); return; } showQuestion(); });
-$("#feedbackButton").addEventListener("click", () => { const answer = $("#answer").value.trim(); if (answer.length < 20) { alert("두세 문장 정도 답변을 적어 보면 더 좋은 피드백을 받을 수 있어요."); return; } clearInterval(timerId); const data = getFeedback(answer); $("#strengthText").textContent=data.strength; $("#improveText").textContent=data.improve; $("#tipText").textContent=data.tip; $("#followupText").textContent=data.followup; saveRecord(answer); $("#feedback").classList.remove("hidden"); $("#feedback").scrollIntoView({behavior:"smooth",block:"start"}); });
+$("#feedbackButton").addEventListener("click", async () => { const answer = $("#answer").value.trim(); if (answer.length < 20) { alert("두세 문장 정도 답변을 적어 보면 더 좋은 피드백을 받을 수 있어요."); return; } clearInterval(timerId); let data; try { const result = await requestAi("feedback", answer); data = { strength: result.strengths.join(" "), improve: result.improvements.join(" "), tip: result.one_sentence_tip, followup: result.follow_up_question }; } catch (_) { data = getFeedback(answer); } $("#strengthText").textContent=data.strength; $("#improveText").textContent=data.improve; $("#tipText").textContent=data.tip; $("#followupText").textContent=data.followup; saveRecord(answer); $("#feedback").classList.remove("hidden"); $("#feedback").scrollIntoView({behavior:"smooth",block:"start"}); });
 $("#nextButton").addEventListener("click", showQuestion);
 $("#retryButton").addEventListener("click", () => { $("#feedback").classList.add("hidden"); $("#answer").focus(); startTimer(); });
 $("#resetButton").addEventListener("click", () => { clearInterval(timerId); $("#interviewRoom").classList.add("hidden"); $("#feedback").classList.add("hidden"); $("#setupCard").scrollIntoView({behavior:"smooth"}); });
